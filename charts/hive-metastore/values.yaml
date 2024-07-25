@@ -1,0 +1,181 @@
+# Default values for hive-metastore.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: apache/hive
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.0.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 9083
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Volumes on the output Deployment definition.
+volumes: 
+  - name: hive-config
+    configMap:
+      name: {{ include "hiveMetastore.fullname" . }}
+  - name: warehouse-dir
+    emptyDir: {}
+
+# VolumeMounts on the output Deployment definition.
+volumeMounts: 
+  - name: hive-config
+    mountPath: /opt/hive/conf
+  - name: warehouse-dir
+    mountPath: /opt/hive/warehouse
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# -- Configuration values for the postgresql dependency.
+# ref: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+# @default -- see `values.yaml`
+postgresql:
+  ##
+  ## Use the PostgreSQL chart dependency.
+  ## Set to false if bringing your own PostgreSQL.
+  enabled: true
+
+  ## Authentication parameters
+  auth:
+    enablePostgresUser: true
+    existingSecret:
+    username: hive
+    password: hive
+    database: hive
+
+  image:
+    tag: "16.3.0-debian-12-r23"
+
+  ## PostgreSQL Primary parameters
+  primary:
+    ##
+    ## Persistent Volume Storage configuration.
+    ## ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+    persistence:
+      ##
+      ## Enable PostgreSQL persistence using Persistent Volume Claims.
+      enabled: true
+      ##
+      ## Persistent class
+      # storageClass: classname
+      ##
+      ## Access modes:
+      accessModes:
+        - ReadWriteOnce
+    ## PostgreSQL port
+    service:
+      ports:
+        postgresql: "5432"
+
+externalDatabase:
+  username:
+  password:
+  host:
+  port: 5432
+  database: hive
+
+conf:
+  hiveSite:
+    hive_metastore_uris: thrift://hive-metastore:9083
+
+objectStore:
+  sslEnabled: false
+  endpoint:
+  accessKeyId:
+  secretAccessKey:
+  pathStyle: true
+  impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
+  
+
+log:
+  level:
+    meta: debug
+    hive: info
+    datanucleusorg: info
+    datanucleus: info
+    root: info
+
+## Extra environment variables passed to Hive pods
+extraEnvVars: []

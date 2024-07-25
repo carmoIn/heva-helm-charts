@@ -5,10 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: apache/hive
+  repository: sslhep/hive-metastore
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "4.0.0"
+  tag: "3.1.3"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -28,10 +27,12 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -46,7 +47,8 @@ service:
 ingress:
   enabled: false
   className: ""
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -59,7 +61,8 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -70,37 +73,6 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# Volumes on the output Deployment definition.
-volumes: 
-  - name: hive-config
-    configMap:
-      name: {{ include "hiveMetastore.fullname" . }}
-  - name: warehouse-dir
-    emptyDir: {}
-
-# VolumeMounts on the output Deployment definition.
-volumeMounts: 
-  - name: hive-config
-    mountPath: /opt/hive/conf
-  - name: warehouse-dir
-    mountPath: /opt/hive/warehouse
 
 nodeSelector: {}
 
@@ -117,18 +89,14 @@ postgresql:
   ## Set to false if bringing your own PostgreSQL.
   enabled: true
 
-  ## Authentication parameters
-  auth:
-    enablePostgresUser: true
-    existingSecret:
-    username: hive
-    password: hive
-    database: hive
+  ## PostgreSQL global parameters
+  global:
+    postgresql:
+      auth:
+        username: hive
+        password: hive
+        database: metastore
 
-  image:
-    tag: "16.3.0-debian-12-r23"
-
-  ## PostgreSQL Primary parameters
   primary:
     ##
     ## Persistent Volume Storage configuration.
@@ -136,7 +104,7 @@ postgresql:
     persistence:
       ##
       ## Enable PostgreSQL persistence using Persistent Volume Claims.
-      enabled: true
+      enabled: false
       ##
       ## Persistent class
       # storageClass: classname
@@ -144,31 +112,44 @@ postgresql:
       ## Access modes:
       accessModes:
         - ReadWriteOnce
+
+    # The apache hive docker image has a jdbc driver that doesn't use the latest encryption
+    # settings. Tell postgres to allow access any way
+    extendedConfiguration: |-
+      password_encryption=md5
+
     ## PostgreSQL port
     service:
       ports:
         postgresql: "5432"
 
-externalDatabase:
-  username:
-  password:
-  host:
-  port: 5432
-  database: hive
+# Define hive connections to other services
+connections:
+  database:
+    username: hive
+    password: hive
+    database: metastore
+    host: '{{ .Release.Name }}-postgresql'
+    port: 5432
 
+# Update hive-site.xml file
 conf:
   hiveSite:
-    hive_metastore_uris: thrift://hive-metastore:9083
+    # Define tmp folder for hdfs since we only have metastore here. 
+    # If not set, default hive.metastore.warehouse.dir is default to: "hdfs://{{.Release.Name}}-hdfs:8020/user/hive/warehouse"
+    hive.metastore.warehouse.dir: "file:///tmp"
 
+# Define object store connections values
 objectStore:
+  objectStore:
   sslEnabled: false
   endpoint:
   accessKeyId:
   secretAccessKey:
   pathStyle: true
   impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
-  
 
+# Update log4j properites
 log:
   level:
     meta: debug
@@ -177,5 +158,11 @@ log:
     datanucleus: info
     root: info
 
-## Extra environment variables passed to Hive pods
+# Extra environment variables passed to Hive pods
 extraEnvVars: []
+
+# Optionally specify extra list of additional volumeMounts for Hive pods
+extraVolumeMounts: []
+
+# Optionally specify extra list of additional volumes for Hive pods
+extraVolumes: []

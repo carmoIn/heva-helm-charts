@@ -1,6 +1,6 @@
 apiVersion: v2
 name: hive-metastore
-description: A Helm chart for Kubernetes
+description: A Helm chart to deploy Hive Metastore
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -25,6 +25,19 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: postgresql
-    version: 15.5.20
+    version: 15.x.x
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
+
+keywords:
+  - hive 
+  - metastore
+sources:
+  - https://github.com/apache/hive
+  - https://github.com/ssl-hep/hive-metastore/
+home: https://github.com/HEVAWEB/heva-helm-charts
+
+maintainers:
+  - name: Heva
+    url: https://hevaweb.com/ 
+icon: https://pbs.twimg.com/profile_images/1791393282280296448/67SU68LI_400x400.png

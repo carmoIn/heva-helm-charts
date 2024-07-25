@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "hiveMetastore.fullname" . }}
+  name: {{ include "hive-metastore.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "hiveMetastore.name" . }}
-    {{- include "hiveMetastore.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "hive-metastore.name" . }}
+    {{- include "hive-metastore.labels" . | nindent 4 }}
 data:
   hive-site.xml: |
     <?xml version="1.0"?>
@@ -27,7 +27,7 @@ data:
         <!--Postgres' connection details -->
         <property>
           <name>javax.jdo.option.ConnectionURL</name>
-          <value>jdbc:postgresql://{{- .Values.externalDatabase.host }}:{{- .Values.externalDatabase.port }}/{{- .Values.externalDatabase.database }}</value>
+          <value>jdbc:postgresql://{{- tpl .Values.connections.database.host . }}/{{- .Values.connections.database.database }}</value>
         </property>
         <property>
           <name>javax.jdo.option.ConnectionDriverName</name>
@@ -35,23 +35,22 @@ data:
         </property>
         <property>
           <name>javax.jdo.option.ConnectionUserName</name>
-          <value>{{- .Values.externalDatabase.username }}</value>
+          <value>{{- .Values.connections.database.username }}</value>
         </property>
         <property>
           <name>javax.jdo.option.ConnectionPassword</name>
-          <value>{{- .Values.externalDatabase.password }}</value>
+          <value>{{- .Values.connections.database.password }}</value>
         </property>
         <property>
           <name>datanucleus.autoCreateSchema</name>
           <value>false</value>
         </property>
 
-        {{- if not (index .Values.conf "hiveSite" "hive.metastore.uris")  }}
         <property>
           <name>hive.metastore.uris</name>
-          <value>thrift://localhost:9083</value>
+          <value>thrift://localhost:{{- .Values.service.port }}</value>
         </property>
-      {{- end }}
+
         <property>
             <name>hive.server2.transport.mode</name>
             <value>http</value>
@@ -127,21 +126,21 @@ data:
     loggers = meta
     
     logger.meta.name = org.apache.hadoop.hive.metastore
-    logger.meta.level = {{- Values.log.level.meta }} 
+    logger.meta.level = {{- .Values.log.level.meta }} 
     
     logger.meta.name = org.apache.hadoop.fs.s3a
-    logger.meta.level = {{- Values.log.level.meta }} 
+    logger.meta.level = {{- .Values.log.level.meta }} 
 
     logger.hive.name = org.apache.hive
-    logger.hive.level = {{- Values.log.level.hive }} 
+    logger.hive.level = {{- .Values.log.level.hive }} 
     
     logger.datanucleusorg.name = org.datanucleus
-    logger.datanucleusorg.level = {{- Values.log.level.datanucleusorg }} 
+    logger.datanucleusorg.level = {{- .Values.log.level.datanucleusorg }} 
     
     logger.datanucleus.name = DataNucleus
-    logger.datanucleus.level = {{- Values.log.level.datanucleus }} 
+    logger.datanucleus.level = {{- .Values.log.level.datanucleus }} 
     
-    rootLogger.level = {{- Values.log.level.root }} 
+    rootLogger.level = {{- .Values.log.level.root }} 
     rootLogger.appenderRefs = console
     rootLogger.appenderRef.console.ref = consoleLogger
 

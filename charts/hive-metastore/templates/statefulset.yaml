@@ -1,13 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "hive-metastore.fullname" . }}
   labels:
     {{- include "hive-metastore.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "hive-metastore.selectorLabels" . | nindent 6 }}
@@ -30,36 +28,27 @@ spec:
       serviceAccountName: {{ include "hive-metastore.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: check-postgresql
-          image: "ncsa/checks:1.0.0"
-          env:
-            - name: PGURI
-              value: "postgresql://{{- .Values.externalDatabase.host }}:{{- .Values.externalDatabase.port }}/{{- .Values.externalDatabase.database }}"
-            - name: PGUSER
-              value: "{{- .Values.externalDatabase.username }}"
-            - name: PGPASSWORD
-              value: "{{- .Values.externalDatabase.password }}"
-            - name: PGTABLE
-              value: "users"
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          args:
-            - schematool
-             --verbose
-             -initSchema
-             -dbType postgres
-             -userName "{{- .Values.externalDatabase.username }}"
-             -passWord "{{- .Values.externalDatabase.password }}"
-             -url "jdbc:postgresql://{{- .Values.externalDatabase.host }}:{{- .Values.externalDatabase.port }}/{{- .Values.externalDatabase.database }}"
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "hive --service metastore"
           env:
             - name: SERVICE_NAME
               value: metastore
+            - name: DATABASE_HOST
+              value: "{{- tpl .Values.connections.database.host . }}"
+            - name: DATABASE_DB
+              value: "{{- .Values.connections.database.database }}"
+            - name: DATABASE_USER
+              value: "{{- .Values.connections.database.username }}"
+            - name: DATABASE_PASSWORD
+              value: "{{- .Values.connections.database.password }}"
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -67,20 +56,25 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+            - name: hive-config
+              mountPath: /opt/hive/conf
+            - name: warehouse-dir
+              mountPath: /opt/hive/warehouse
+            {{- if .Values.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: hive-config
+          configMap:
+            name: {{ include "hive-metastore.fullname" . }}
+        - name: warehouse-dir
+          emptyDir: {}
+        {{- if .Values.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

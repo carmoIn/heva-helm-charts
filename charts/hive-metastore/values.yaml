@@ -135,7 +135,7 @@ connections:
 # Update hive-site.xml file
 conf:
   hiveSite:
-    # Define tmp folder for hdfs since we only have metastore here. 
+    # Define tmp folder for hdfs since we only have metastore here.
     # If not set, default hive.metastore.warehouse.dir is default to: "hdfs://{{.Release.Name}}-hdfs:8020/user/hive/warehouse"
     hive.metastore.warehouse.dir: "file:///tmp"
 

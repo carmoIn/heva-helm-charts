@@ -7,8 +7,8 @@
 ## Getting started
 
 ```
-helm repo add heva https://hevaweb.github.io/heva-helm-charts/
-helm install hive-metastore heva/hive-metastore
+helm repo add heva-helm-charts https://hevaweb.github.io/heva-helm-charts/
+helm install hive-metastore heva-helm-charts/hive-metastore
 ```
 
 ## Configuration

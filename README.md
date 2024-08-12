@@ -1,19 +1,11 @@
 # Heva Helm Charts
 
-## Contributing
-
-### Requirements
-* https://github.com/helm/chart-testing
-* https://github.com/bitnami/readme-generator-for-helm
-
-### CI
-
-Run linter in chart directory:
 ```
-ct lint --chart-dirs . --charts .
+helm repo add heva https://hevaweb.github.io/heva-helm-charts/
+helm search repo heva
 ```
 
-Update chart parameters in readme
+## Hive Metastore
 ```
-readme-generator -v values.yaml -r README.md
+helm install hive-metastore heva/hive-metastore
 ```

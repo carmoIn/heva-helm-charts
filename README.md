@@ -1,5 +1,17 @@
 # Heva Helm Charts
 
+## Getting started
+
+```
+helm repo add heva https://hevaweb.github.io/heva-helm-charts/
+helm search repo heva
+```
+
+## Charts
+
+* [Hive-metastore](./charts/hive-metastore/README.md): Deploy [Hive](https://hive.apache.org/) metastore
+
+
 ## Contributing
 
 ### Requirements

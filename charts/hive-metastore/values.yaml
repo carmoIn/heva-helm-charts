@@ -4,9 +4,6 @@
 
 ## @section Common parameters
 
-## @param replicaCount Number of hive metastore replicas
-replicaCount: 1
-
 ## @param image.repository [default: sslhep/hive-metastore] Docker image repository
 ## @param image.pullPolicy Docker image pull policy
 ## @param image.tag Docker image tag (immutable tags are recommended)

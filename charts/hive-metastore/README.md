@@ -2,7 +2,7 @@
 
 > Inspired by https://github.com/Gradiant/bigdata-charts and https://github.com/ssl-hep/hive-metastore/tree/main
 
-:warning: This chart is currently under development. Must features have not been tested yet.
+:warning: This chart is currently under development. Some features have not been tested yet.
 
 ## Getting started
 
@@ -44,7 +44,6 @@ password_encryption=md5
 
 | Name                                          | Description                                                                                                                      | Value                   |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `replicaCount`                                | Number of hive metastore replicas                                                                                                | `1`                     |
 | `image.repository`                            | Docker image repository                                                                                                          | `sslhep/hive-metastore` |
 | `image.pullPolicy`                            | Docker image pull policy                                                                                                         | `IfNotPresent`          |
 | `image.tag`                                   | Docker image tag (immutable tags are recommended)                                                                                | `3.1.3`                 |

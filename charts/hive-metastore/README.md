@@ -2,7 +2,20 @@
 
 > Inspired by https://github.com/Gradiant/bigdata-charts and https://github.com/ssl-hep/hive-metastore/tree/main
 
-:warning: This chart is currently under development. Some features have not been tested yet.
+⚠️ This chart is currently under development. Some features have not been tested yet.
+
+<!-- toc -->
+
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+  - [Docker image](#docker-image)
+  - [Database](#database)
+- [Parameters](#parameters)
+  - [Common parameters](#common-parameters)
+  - [Hive Parameters](#hive-parameters)
+  - [Database Paramaters](#database-paramaters)
+
+<!-- tocstop -->
 
 ## Getting started
 
@@ -12,17 +25,20 @@ helm install hive-metastore heva-helm-charts/hive-metastore
 ```
 
 ## Configuration
+
 > See [values.yaml](./values.yaml) for full list of options
 
 ### Docker image
+
 This chart has been tested with hive 3.1.3 using https://github.com/ssl-hep/hive-metastore/ image.
 
 ### Database
+
 The default behavior of this chart is to create a specific database for Hive Metastore, but it is possible to use an existing database:
 
 ```yaml
 postgresql:
-    enabled: false
+  enabled: false
 
 connections:
   database:
@@ -33,10 +49,34 @@ connections:
     port: 5432
 ```
 
-:warning: Please note that currently only postgresql database is accepted and the database should have the following configuration:
-```
-password_encryption=md5
-```
+⚠️ Please note that currently only postgresql database is accepted and the database password encryption for hive should be `md5`.
+
+There are two options to do this:
+
+- Update postgresql configuration with
+  ```
+  password_encryption=md5
+  ```
+- **Or** generate a specific md5 encrypted password
+  - Define a user and password for hive (e.g. `hive` and `some-password`)
+  - Run the following command to get the md5 encrypted password (with the concatenation of password and user)
+  ```bash
+  echo -n "md5"; echo -n "password123hive" | md5sum | awk '{print $1}'
+  ```
+  - Manually create user on postgres database with encrypted password
+  ```sql
+  CREATE USER hive WITH PASSWORD 'md5***';
+  ```
+  - Don't forget to give all necessary permissions to hive user on hive database
+  ```sql
+  CREATE DATABASE metastore OWNER hive;
+  \c hive
+  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO hive;
+  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO hive;
+  GRANT USAGE ON SCHEMA public TO hive;
+  GRANT ALL PRIVILEGES ON DATABASE metastore TO hive;
+  ```
+  - In helm-metastore values, use explicit password `password123`
 
 ## Parameters
 

@@ -15,20 +15,25 @@ spec:
            --verbose
            -initSchema
            -dbType postgres
-           -url "jdbc:postgresql://{{- .Values.connections.database.username }}:{{- .Values.connections.database.password }}@{{- tpl .Values.connections.database.host . }}:{{- .Values.connections.database.port }}/{{- .Values.connections.database.database }}"
-        # -url $HIVE_JDBC_URI
+           -userName "{{- .Values.connections.database.username }}"
+           -passWord "$DATABASE_PASSWORD"
+           -url "jdbc:postgresql://{{- tpl .Values.connections.database.host . }}:{{- .Values.connections.database.port }}/{{- .Values.connections.database.database }}"
         volumeMounts:
         - name: hive-config
           mountPath: /opt/hive-metastore/conf
         env:
           {{- if .Values.extraEnvVars }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+          {{- .Values.extraEnvVars | nindent 12 }}
+          {{- end }}
+          {{- if .Values.connections.database.password }}
+          - name: DATABASE_PASSWORD
+            value: "{{- .Values.connections.database.password }}"
           {{- end }}
         {{- if .Values.extraEnvVarsSecret }}
         envFrom:
           {{- if .Values.extraEnvVarsSecret }}
           - secretRef:
-              name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+              name: "{{- .Values.extraEnvVarsSecret }}"
           {{- end }}
         {{- end }}
       volumes:

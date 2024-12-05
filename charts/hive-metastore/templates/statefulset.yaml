@@ -47,16 +47,18 @@ spec:
               value: "{{- .Values.connections.database.database }}"
             - name: DATABASE_USER
               value: "{{- .Values.connections.database.username }}"
+            {{- if .Values.connections.database.password }}
             - name: DATABASE_PASSWORD
               value: "{{- .Values.connections.database.password }}"
+            {{- end }}
             {{- if .Values.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- .Values.extraEnvVars | nindent 12 }}
             {{- end }}
           {{- if .Values.extraEnvVarsSecret }}
           envFrom:
             {{- if .Values.extraEnvVarsSecret }}
             - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+                name: "{{- .Values.extraEnvVarsSecret  }}"
             {{- end }}
           {{- end }}
           ports:
@@ -71,7 +73,7 @@ spec:
             - name: warehouse-dir
               mountPath: /opt/hive/warehouse
             {{- if .Values.extraVolumeMounts }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- tpl .Values.extraVolumeMounts .context | nindent 12 }}
             {{- end }}
       volumes:
         - name: hive-config
@@ -80,7 +82,7 @@ spec:
         - name: warehouse-dir
           emptyDir: {}
         {{- if .Values.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- tpl .Values.extraVolumes .context | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

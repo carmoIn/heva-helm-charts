@@ -114,6 +114,9 @@ affinity: {}
 ## @param extraEnvVars Extra environment variables passed to Hive pods
 extraEnvVars: []
 
+## @param extraEnvVarsSecret Secret with extra environment variables
+extraEnvVarsSecret: ""
+
 ## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for Hive pods
 extraVolumeMounts: []
 

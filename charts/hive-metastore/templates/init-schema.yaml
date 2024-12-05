@@ -15,9 +15,8 @@ spec:
            --verbose
            -initSchema
            -dbType postgres
-           -userName "{{- .Values.connections.database.username }}"
-           -passWord "{{- .Values.connections.database.password }}"
-           -url "jdbc:postgresql://{{- tpl .Values.connections.database.host . }}:{{- .Values.connections.database.port }}/{{- .Values.connections.database.database }}"
+           -url "jdbc:postgresql://{{- .Values.connections.database.username }}:{{- .Values.connections.database.password }}@{{- tpl .Values.connections.database.host . }}:{{- .Values.connections.database.port }}/{{- .Values.connections.database.database }}"
+        # -url $HIVE_JDBC_URI
         volumeMounts:
         - name: hive-config
           mountPath: /opt/hive-metastore/conf
@@ -25,6 +24,13 @@ spec:
           {{- if .Values.extraEnvVars }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
           {{- end }}
+        {{- if .Values.extraEnvVarsSecret }}
+        envFrom:
+          {{- if .Values.extraEnvVarsSecret }}
+          - secretRef:
+              name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+          {{- end }}
+        {{- end }}
       volumes:
       - name: hive-config
         configMap:

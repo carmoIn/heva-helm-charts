@@ -110,6 +110,7 @@ There are two options to do this:
 | `tolerations`                                 | Tolerations for Hive pods assignment                                                                                             | `[]`                    |
 | `affinity`                                    | Affinity for Hive pods assignment (evaluated as a template)                                                                      | `{}`                    |
 | `extraEnvVars`                                | Extra environment variables passed to Hive pods                                                                                  | `[]`                    |
+| `extraEnvVarsSecret`                          | Secret with extra environment variables                                                                                          | `""`                    |
 | `extraVolumeMounts`                           | Optionally specify extra list of additional volumeMounts for Hive pods                                                           | `[]`                    |
 | `extraVolumes`                                | Optionally specify extra list of additional volumes for Hive pods                                                                | `[]`                    |
 

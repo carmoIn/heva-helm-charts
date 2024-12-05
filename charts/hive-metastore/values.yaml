@@ -112,7 +112,11 @@ tolerations: []
 affinity: {}
 
 ## @param extraEnvVars Extra environment variables passed to Hive pods
-extraEnvVars: []
+# e.g.
+# extraEnvVars: |
+#   - name: SOME_VAR
+#     value: SOME_VALUE
+extraEnvVars: ""
 
 ## @param extraEnvVarsSecret Secret with extra environment variables
 extraEnvVarsSecret: ""
@@ -130,8 +134,8 @@ connections:
   database:
     ## @param connections.database.username [default: hive] Database username
     username: hive
-    ## @param connections.database.password [default: hive] Database password
-    password: hive
+    ## @param connections.database.password Database password. Note that one can use 'DATABASE_PASSWORD' environment variable instead.
+    password: "" 
     ## @param connections.database.database [default: metastore] Hive database name
     database: metastore
     ## @param connections.database.host Databas host

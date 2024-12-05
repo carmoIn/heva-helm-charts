@@ -78,6 +78,14 @@ There are two options to do this:
   ```
   - In helm-metastore values, use explicit password `password123`
 
+### Secrets
+It is possible to provide some sensitive values as secrets using `extraEnvVarsSecret`. 
+
+Here is a list of expected environment variables for sensitive values:
+| environment variable | value |
+| - | - |
+| `DATABASE_PASSWORD` | `connections.database.password` |
+
 ## Parameters
 
 ### Common parameters
@@ -109,7 +117,7 @@ There are two options to do this:
 | `nodeSelector`                                | Node labels for Hive pods assignment                                                                                             | `{}`                    |
 | `tolerations`                                 | Tolerations for Hive pods assignment                                                                                             | `[]`                    |
 | `affinity`                                    | Affinity for Hive pods assignment (evaluated as a template)                                                                      | `{}`                    |
-| `extraEnvVars`                                | Extra environment variables passed to Hive pods                                                                                  | `[]`                    |
+| `extraEnvVars`                                | Extra environment variables passed to Hive pods                                                                                  | `""`                    |
 | `extraEnvVarsSecret`                          | Secret with extra environment variables                                                                                          | `""`                    |
 | `extraVolumeMounts`                           | Optionally specify extra list of additional volumeMounts for Hive pods                                                           | `[]`                    |
 | `extraVolumes`                                | Optionally specify extra list of additional volumes for Hive pods                                                                | `[]`                    |

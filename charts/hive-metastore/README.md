@@ -1,4 +1,5 @@
 # Hive Mestastore
+Deploys a Hive Metastore on Kubernetes using Hive3.
 
 > Inspired by https://github.com/Gradiant/bigdata-charts and https://github.com/ssl-hep/hive-metastore/tree/main
 
@@ -10,6 +11,9 @@
 - [Configuration](#configuration)
   - [Docker image](#docker-image)
   - [Database](#database)
+  - [Secrets](#secrets)
+    - [Hive site](#hive-site)
+    - [Database password](#database-password)
 - [Parameters](#parameters)
   - [Common parameters](#common-parameters)
   - [Hive Parameters](#hive-parameters)
@@ -79,12 +83,53 @@ There are two options to do this:
   - In helm-metastore values, use explicit password `password123`
 
 ### Secrets
-It is possible to provide some sensitive values as secrets using `extraEnvVarsSecret`. 
 
-Here is a list of expected environment variables for sensitive values:
-| environment variable | value |
-| - | - |
-| `DATABASE_PASSWORD` | `connections.database.password` |
+#### Hive site
+
+Some configuration in `hive-site.xml` file may contains sensistive value.
+It is possible to pass those information using a secret which will be converted to `hivemetastore-site.xml` file with value `conf.hiveSiteSecret`.
+
+For example, one can create a file `hivemetastore-site.xml` like this:
+
+```xml
+<configuration>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>***</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>***</value>
+    </property>
+</configuration>
+```
+
+Then create a secret
+
+```
+kubectl create secret generic hive-config --from-file=hivemetastore-site.xml
+```
+
+And use it in values:
+
+```yaml
+conf:
+  hiveSiteSecret: hive-config
+```
+
+#### Database password
+
+It is possible to provide database password from a secret by using `extraEnvVarsSecret` **and** `conf.hiveSiteSecret`.
+
+* This charts expect an environment variable `DATABASE_PASSWORD` if not explictely provided with `connections.database.password`.
+* It is also necessary to provide a hive site configuration with the password (using `conf.hiveSiteSecret`):
+
+```xml
+<property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>***</value>
+</property>
+```
 
 ## Parameters
 

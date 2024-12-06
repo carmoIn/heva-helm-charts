@@ -29,3 +29,8 @@ Update chart parameters in readme
 ```
 readme-generator -v values.yaml -r README.md
 ```
+
+Update README table of contents
+```
+npx markdown-toc -i README.md --bullets '-'
+```

@@ -14,8 +14,8 @@ spec:
           - schematool
            --verbose
            -initSchema
-           -dbType postgres
            -ifNotExists
+           -dbType postgres
            -userName "{{- .Values.connections.database.username }}"
            -passWord "$DATABASE_PASSWORD"
            -url "jdbc:postgresql://{{- tpl .Values.connections.database.host . }}:{{- .Values.connections.database.port }}/{{- .Values.connections.database.database }}"

@@ -38,10 +38,6 @@ data:
           <value>{{- .Values.connections.database.username }}</value>
         </property>
         <property>
-          <name>javax.jdo.option.ConnectionPassword</name>
-          <value>{{- .Values.connections.database.password }}</value>
-        </property>
-        <property>
           <name>datanucleus.autoCreateSchema</name>
           <value>false</value>
         </property>
@@ -81,20 +77,26 @@ data:
             <value>{{- .Values.objectStore.sslEnabled }}</value>
         </property>
 
+        {{- if .Values.objectStore.endpoint }}
         <property>
             <name>fs.s3a.endpoint</name>
             <value>{{- .Values.objectStore.endpoint }}</value>
         </property>
+        {{- end }}
 
+        {{- if .Values.objectStore.accessKeyId }}
         <property>
             <name>fs.s3a.access.key</name>
             <value>{{- .Values.objectStore.accessKeyId }}</value>
         </property>
+        {{- end }}
 
+        {{- if .Values.objectStore.secretAccessKey }}
         <property>
             <name>fs.s3a.secret.key</name>
             <value>{{- .Values.objectStore.secretAccessKey }}</value>
         </property>
+        {{- end }}
 
         <property>
             <name>fs.s3a.path.style.access</name>

@@ -124,25 +124,27 @@ Here is a list of expected environment variables for sensitive values:
 
 ### Hive Parameters
 
-| Name                            | Description                                                  | Value                                    |
-| ------------------------------- | ------------------------------------------------------------ | ---------------------------------------- |
-| `connections.database.username` | Database username                                            | `hive`                                   |
-| `connections.database.password` | Database password                                            | `hive`                                   |
-| `connections.database.database` | Hive database name                                           | `metastore`                              |
-| `connections.database.host`     | Databas host                                                 | `{{ .Release.Name }}-postgresql`         |
-| `connections.database.port`     | Database port                                                | `5432`                                   |
-| `conf.hiveSite`                 | Set of hive-site.xml configuration                           | `{}`                                     |
-| `objectStore.sslEnabled`        | Value of fs.s3a.connection.ssl.enabled in hive-site.xml file | `false`                                  |
-| `objectStore.endpoint`          | Value of fs.s3a.endpoint in hive-site.xml file               | `nil`                                    |
-| `objectStore.accessKeyId`       | Value of fs.s3a.access.key in hive-site.xml file             | `nil`                                    |
-| `objectStore.secretAccessKey`   | Value of fs.s3a.secret.key in hive-site.xml file             | `nil`                                    |
-| `objectStore.pathStyle`         | Value of fs.s3a.path.style.access in hive-site.xml file      | `true`                                   |
-| `objectStore.impl`              | Value of fs.s3a.impl in hive-site.xml file                   | `org.apache.hadoop.fs.s3a.S3AFileSystem` |
-| `log.level.meta`                | Log level of logger.meta in log4j properties                 | `debug`                                  |
-| `log.level.hive`                | Log level of logger.hive in log4j properties                 | `info`                                   |
-| `log.level.datanucleusorg`      | Log level of logger.datanucleusorg in log4j properties       | `info`                                   |
-| `log.level.datanucleus`         | Log level of logger.datanucleus in log4j properties          | `info`                                   |
-| `log.level.root`                | Log level of logger.root in log4j properties                 | `info`                                   |
+| Name                            | Description                                                                                             | Value                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `connections.database.username` | Database username                                                                                       | `hive`                                   |
+| `connections.database.password` | Database password. Note that one can use 'DATABASE_PASSWORD' environment variable instead.              | `""`                                     |
+| `connections.database.database` | Hive database name                                                                                      | `metastore`                              |
+| `connections.database.host`     | Databas host                                                                                            | `{{ .Release.Name }}-postgresql`         |
+| `connections.database.port`     | Database port                                                                                           | `5432`                                   |
+| `conf.hiveSite`                 | Set of hive-site.xml configuration                                                                      | `{}`                                     |
+| `conf.hiveSiteSecret`           | Name of secret containing extra hive-site configuration. Will be mounted as hivemetastore-site.xml file | `""`                                     |
+| `conf.hiveSiteSecretKey`        | Key in secret containing extra hive-site configuration                                                  | `hivemetastore-site.xml`                 |
+| `objectStore.sslEnabled`        | Value of fs.s3a.connection.ssl.enabled in hive-site.xml file                                            | `false`                                  |
+| `objectStore.endpoint`          | Value of fs.s3a.endpoint in hive-site.xml file                                                          | `nil`                                    |
+| `objectStore.accessKeyId`       | Value of fs.s3a.access.key in hive-site.xml file                                                        | `nil`                                    |
+| `objectStore.secretAccessKey`   | Value of fs.s3a.secret.key in hive-site.xml file                                                        | `nil`                                    |
+| `objectStore.pathStyle`         | Value of fs.s3a.path.style.access in hive-site.xml file                                                 | `true`                                   |
+| `objectStore.impl`              | Value of fs.s3a.impl in hive-site.xml file                                                              | `org.apache.hadoop.fs.s3a.S3AFileSystem` |
+| `log.level.meta`                | Log level of logger.meta in log4j properties                                                            | `debug`                                  |
+| `log.level.hive`                | Log level of logger.hive in log4j properties                                                            | `info`                                   |
+| `log.level.datanucleusorg`      | Log level of logger.datanucleusorg in log4j properties                                                  | `info`                                   |
+| `log.level.datanucleus`         | Log level of logger.datanucleus in log4j properties                                                     | `info`                                   |
+| `log.level.root`                | Log level of logger.root in log4j properties                                                            | `info`                                   |
 
 ### Database Paramaters
 

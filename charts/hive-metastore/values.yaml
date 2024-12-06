@@ -135,7 +135,7 @@ connections:
     ## @param connections.database.username [default: hive] Database username
     username: hive
     ## @param connections.database.password Database password. Note that one can use 'DATABASE_PASSWORD' environment variable instead.
-    password: "" 
+    password: ""
     ## @param connections.database.database [default: metastore] Hive database name
     database: metastore
     ## @param connections.database.host Databas host
@@ -150,6 +150,10 @@ conf:
     # Define tmp folder for hdfs since we only have metastore here.
     # If not set, default hive.metastore.warehouse.dir is default to: "hdfs://{{.Release.Name}}-hdfs:8020/user/hive/warehouse"
     hive.metastore.warehouse.dir: "file:///tmp"
+  ## @param conf.hiveSiteSecret Name of secret containing extra hive-site configuration. Will be mounted as hivemetastore-site.xml file
+  hiveSiteSecret: ""
+  ## @param conf.hiveSiteSecretKey Key in secret containing extra hive-site configuration
+  hiveSiteSecretKey: "hivemetastore-site.xml"
 
 ## Specific configuration of hadoop-aws plugin
 ## ref: https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html

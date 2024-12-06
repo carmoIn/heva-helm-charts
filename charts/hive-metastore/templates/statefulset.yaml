@@ -70,6 +70,7 @@ spec:
           volumeMounts:
             - name: hive-config
               mountPath: /opt/hive/conf
+              readOnly: true
             - name: warehouse-dir
               mountPath: /opt/hive/warehouse
             {{- if .Values.extraVolumeMounts }}
@@ -77,8 +78,17 @@ spec:
             {{- end }}
       volumes:
         - name: hive-config
-          configMap:
-            name: {{ include "hive-metastore.fullname" . }}
+          projected:
+            sources:
+              - configMap:
+                  name: {{ include "hive-metastore.fullname" . }}
+              {{- if .Values.conf.hiveSiteSecret }}
+              - secret:
+                  name: {{ .Values.conf.hiveSiteSecret }}
+                  items:
+                    - key: {{ .Values.conf.hiveSiteSecretKey }}
+                      path: hivemetastore-site.xml
+              {{- end }}
         - name: warehouse-dir
           emptyDir: {}
         {{- if .Values.extraVolumes }}

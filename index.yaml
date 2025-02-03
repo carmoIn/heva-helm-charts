@@ -3,6 +3,32 @@ entries:
   hive-metastore:
   - apiVersion: v2
     appVersion: 3.1.3
+    created: "2025-02-03T09:22:39.048905836Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.x.x
+    description: A Helm chart to deploy Hive Metastore
+    digest: 2c93ae173d76e6b271f0a7529f09f434b5f22628d9aedc34d9016ae9ad9dc201
+    home: https://github.com/HEVAWEB/heva-helm-charts
+    icon: https://pbs.twimg.com/profile_images/1791393282280296448/67SU68LI_400x400.png
+    keywords:
+    - hive
+    - metastore
+    maintainers:
+    - name: Heva
+      url: https://hevaweb.com/
+    name: hive-metastore
+    sources:
+    - https://github.com/apache/hive
+    - https://github.com/ssl-hep/hive-metastore/
+    type: application
+    urls:
+    - https://github.com/HEVAWEB/heva-helm-charts/releases/download/hive-metastore-0.1.0/hive-metastore-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: 3.1.3
     created: "2024-12-06T14:31:19.393487115Z"
     dependencies:
     - condition: postgresql.enabled
@@ -53,4 +79,4 @@ entries:
     urls:
     - https://github.com/HEVAWEB/heva-helm-charts/releases/download/hive-metastore-0.0.1/hive-metastore-0.0.1.tgz
     version: 0.0.1
-generated: "2024-12-06T14:31:19.3935005Z"
+generated: "2025-02-03T09:22:39.048924851Z"
